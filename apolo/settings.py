@@ -28,7 +28,7 @@ SECRET_KEY = config_secret['production']['secret_key']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['versionr.iptime.org', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['versionr.iptime.org', 'localhost', '127.0.0.1', '192.168.0.122']
 AUTH_USER_MODEL = 'account.User'
 DB_DIR = 'C:\DB\server'
 
