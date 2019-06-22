@@ -6,12 +6,12 @@ from .models import User
 class UserCreationForm(forms.ModelForm):
 
     error_messages = {
-        'password_mismatch': "The two password fields didn't match.",
+        'password_mismatch': "비밀번호가 일치하지 않습니다.",
+        'user_id': "해당 프로젝트에 등록된 아이디가 있습니다.",
     }
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(label="Password confirmation", widget=forms.PasswordInput,
                                 help_text="Enter the same password as above, for verification.")
-
     class Meta:
         model = User
         fields = ('user_id','user_key','project',)
@@ -26,6 +26,17 @@ class UserCreationForm(forms.ModelForm):
             )
         return password2
 
+    def clean_user_id(self):
+        user_id = self.cleaned_data.get("user_id")
+        user_key = self.cleaned_data["project"].project_key + "_" + user_id
+        try:
+            user_instance = User.objects.get(user_key=user_key)
+            raise forms.ValidationError(
+                self.error_messages['user_id'],
+                code='user_id',
+            )
+        except User.DoesNotExist:
+            return user_id
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
@@ -33,28 +44,22 @@ class UserCreationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
+        user_key = self.cleaned_data["project"].project_key + "_" + user.user_id
         user.set_password(self.cleaned_data["password1"])
-        user.user_key= self.user. self.cleaned_data.get("user_id")
+        user.user_key = user_key
+
         if commit:
             user.save()
         return user
 
 
+
 class UserChangeForm(forms.ModelForm):
-    password = auth_forms.ReadOnlyPasswordHashField(label="Password",
-        help_text="Raw passwords are not stored, so there is no way to see "
-                  "this user's password, but you can change the password "
-                  "using <a href=\"password/\">this form</a>.")
+    password = auth_forms.ReadOnlyPasswordHashField()
 
     class Meta:
         model = User
         fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super(UserChangeForm, self).__init__(*args, **kwargs)
-        f = self.fields.get('user_permissions', None)
-        if f is not None:
-            f.queryset = f.queryset.select_related('content_type')
 
     def clean_password(self):
         return self.initial["password"]

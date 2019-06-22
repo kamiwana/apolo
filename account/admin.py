@@ -6,8 +6,8 @@ from .forms import *
 class UserAdmin(auth_admin.UserAdmin):
 
     fieldsets = (
-        (None, {'fields': ('user_key','user_id', 'password')}),
-        ('개인 정보', {'fields': ( 'user_name','project','variables',)}),
+        (None, {'fields': ('user_key','project','user_id', 'password')}),
+        ('개인 정보', {'fields': ( 'user_name','variables',)}),
         ('권한', {'fields': ('is_staff', 'is_superuser')}),
         ('Important dates', {'fields': ('date_joined','last_login')}),
     )
@@ -19,17 +19,18 @@ class UserAdmin(auth_admin.UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('user_key','user_id','password1', 'password2')}
+            'fields': ('project', 'user_id','password1', 'password2')}
         ),
     )
 
     add_form = UserCreationForm
+    #form = UserChangeForm
 
     list_display = ('user_id', 'user_name','get_project_key','variables', 'date_joined')
     list_filter = ('project__project_key',)
     search_fields = ('user_id','user_name',)
     ordering = ('user_id',)
-    readonly_fields = ('last_login', 'date_joined',)
+    readonly_fields = ('last_login', 'date_joined','user_key',)
 
     def get_project_key(self, instance):
         return instance.project.project_key

@@ -11,28 +11,28 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-
+import json
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+CONFIG_SECRET_DIR = os.path.join(BASE_DIR, '.config_secret')
+CONFIG_SETTINGS_COMMON_FILE = os.path.join(CONFIG_SECRET_DIR, 'settings_common.json')
+config_secret = json.loads(open(CONFIG_SETTINGS_COMMON_FILE).read())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '5q8_(rlh!s_t)bq851wdw_++7y&$(f_xm&1ifdke!g!&a2*62s'
+SECRET_KEY = config_secret['production']['secret_key']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['versionr.iptime.org','localhost','127.0.0.1']
-
+ALLOWED_HOSTS = ['versionr.iptime.org', 'localhost', '127.0.0.1']
 AUTH_USER_MODEL = 'account.User'
-
-DB_DIR ='C:\DB\server'
+DB_DIR = 'C:\DB\server'
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -82,14 +82,28 @@ WSGI_APPLICATION = 'apolo.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(DB_DIR, 'apolo.sqlite3'),
+if DEBUG :
+
+    DATABASES={
+        'default':{
+        'ENGINE':'django.db.backends.mysql',
+        'NAME':'apolo',#DB명
+        'USER':'root',#데이터베이스계정
+        'PASSWORD':'',#계정비밀번호
+        'HOST':'127.0.0.1',#데이테베이스주소(IP)
+        }
     }
-}
-
-
+else:
+    DATABASES = {
+        'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': config_secret['db']['name'],
+        'USER': config_secret['db']['user'],
+        'PASSWORD': config_secret['db']['password'],
+        'HOST': config_secret['db']['host'],
+        'PORT':config_secret['db']['port'],
+        }
+    }
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
