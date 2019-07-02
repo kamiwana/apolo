@@ -19,6 +19,7 @@ from django.conf.urls import url, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.documentation import include_docs_urls
+from django.views.static import serve
 
 admin.site.site_title = "MARGO OS Apolo Back-end System"
 admin.site.site_header = "MARGO OS Apolo Back-end System"
@@ -29,7 +30,9 @@ urlpatterns = [
     url(r'^account/', include('account.urls')),
     url(r'^project/', include('project.urls')),
     url(r'^file/', include('file.urls')),
-    url(r'^docs/', include_docs_urls(title='Apolo API'))
+    url(r'^docs/', include_docs_urls(title='Apolo API')),
+    url(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
+    url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
 ]
 
 if settings.DEBUG:

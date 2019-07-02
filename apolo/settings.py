@@ -26,7 +26,8 @@ config_secret = json.loads(open(CONFIG_SETTINGS_COMMON_FILE).read())
 SECRET_KEY = config_secret['production']['secret_key']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
 
 ALLOWED_HOSTS = ['versionr.iptime.org', 'localhost', '127.0.0.1', '192.168.0.122']
 AUTH_USER_MODEL = 'account.User'
@@ -88,7 +89,7 @@ if DEBUG :
         'default':{
         'ENGINE':'django.db.backends.mysql',
         'NAME':'apolo',#DB명
-        'USER':'root',#데이터베이스계정
+        'USER':'root',#데이터베이스계정`
         'PASSWORD':'',#계정비밀번호
         'HOST':'127.0.0.1',#데이테베이스주소(IP)
         }
@@ -139,7 +140,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
